@@ -1,29 +1,35 @@
 const http = require('http');
-var mongoose = require('mongoose')
-var express = require('express')
-var bodyParser = require('body-parser')
+const mongoose = require('mongoose')
+const express = require('express')
+const bodyParser = require('body-parser')
+const cors = require('cors');
+const helmet = require('helmet');
 
+let index = require('./routes/indexRouter')
 const hostname = '127.0.0.1';
 const port = 3000;
 
-const server = http.createServer((req, res) => {
-  res.statusCode = 200;
-  res.setHeader('Content-Type', 'text/plain');
-  res.end('Hello World');
-});
 
-var app = express()
+const app = express()
+
+app.use(helmet());
+app.use(cors());
+
 // parse application/x-www-form-urlencoded
 app.use(bodyParser.urlencoded({ extended: false }))
 // parse application/json
 app.use(bodyParser.json())
 
-server.listen(port, hostname, () => {
-  console.log(`Server running at http://${hostname}:${port}/`);
+app.listen(3000, () => {
+    console.log('App listening on port 3000');
 });
 mongoose.connect('mongodb://localhost/vehicle-management', {
-  useNewUrlParser: true,
-  useUnifiedTopology: true,
-  useFindAndModify: false,
-  useCreateIndex: true
+    useNewUrlParser: true,
+    useUnifiedTopology: true,
+    useFindAndModify: false,
+    useCreateIndex: true
 });
+
+app.use('/api/v1', index)
+
+module.exports = app
